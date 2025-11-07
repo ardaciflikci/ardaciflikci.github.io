@@ -1,234 +1,281 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kahve Daveti</title>
-
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kurtarma Oyunu — Kahve Teklifi ☕</title>
 <style>
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Segoe UI', sans-serif;
-        background: linear-gradient(135deg, #ffe6ec, #fff8f2);
-        height: 100vh;
-        overflow: hidden;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    #container {
-        background: rgba(255, 255, 255, 0.8);
-        padding: 35px;
-        width: 90%;
-        max-width: 450px;
-        border-radius: 20px;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 30px rgba(255, 150, 170, 0.3);
-        text-align: center;
-        animation: fadeIn 1s ease;
-    }
-
-    @keyframes fadeIn {
-        from {opacity: 0; transform: scale(0.95);}
-        to {opacity: 1; transform: scale(1);}
-    }
-
-    h2 {
-        color: #b04d6d;
-        margin-bottom: 25px;
-        font-size: 24px;
-        line-height: 1.4;
-    }
-
-    button {
-        padding: 14px 22px;
-        margin: 10px;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        font-size: 17px;
-        font-weight: bold;
-        transition: 0.2s;
-    }
-
-    .yes {
-        background: #ff7ea8;
-        color: white;
-        box-shadow: 0px 4px 12px rgba(255, 120, 160, 0.4);
-    }
-
-    .yes:hover { background: #ff5c92; }
-
-    .no {
-        background: #ffd1d1;
-        color: #b84c4c;
-    }
-
-    .no:hover { background: #ffb3b3; }
-
-    input, textarea {
-        width: 100%;
-        padding: 14px;
-        border-radius: 12px;
-        border: 1px solid #ffb5c8;
-        margin-bottom: 15px;
-        font-size: 15px;
-        background: #fff8fa;
-    }
-
-    .hidden { display: none; }
-
-    .success {
-        font-size: 20px;
-        color: #c7426b;
-        font-weight: bold;
-        padding: 15px;
-    }
-
-    /* ❤️ Kalp Animasyonları */
-    .heart {
-        position: fixed;
-        bottom: -10px;
-        color: #ff7ea8;
-        font-size: 20px;
-        animation: floatUp 4s linear infinite;
-        opacity: 0.8;
-    }
-
-    @keyframes floatUp {
-        0% {transform: translateY(0) translateX(0);}
-        100% {transform: translateY(-110vh) translateX(20px);}
-    }
+  body{
+    margin:0;padding:0;font-family:Inter,Arial;
+    background:linear-gradient(135deg,#ffe6ec,#fff8f2);
+    display:flex;flex-direction:column;align-items:center;user-select:none;
+  }
+  #startScreen{
+    position:fixed;inset:0;background:#ffe6ec;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;padding:20px;
+  }
+  #startBtn{
+    background:#ff77a9;color:white;border:none;padding:14px 22px;
+    border-radius:12px;font-size:20px;cursor:pointer;
+  }
+  canvas{
+    background:#fce4ec;border-radius:12px;image-rendering:pixelated;
+    box-shadow:0 8px 30px rgba(0,0,0,0.15);margin-top:20px;
+  }
+  #messageBox,#questionBox,#pickupBox,#dateBox,#timeBox,#summaryBox{
+    display:none;background:white;padding:18px;border-radius:12px;
+    margin-top:20px;width:90%;max-width:420px;text-align:center;
+    box-shadow:0 8px 30px rgba(0,0,0,0.15);
+  }
+  .btn{
+    background:#ff7ea8;color:white;border:none;padding:12px 16px;
+    border-radius:10px;cursor:pointer;font-size:16px;margin:6px;
+  }
+  .btn.secondary{background:#ffd1d1;color:#b84c4c;}
+  input{
+    width:90%;padding:10px;border:1px solid #ccc;border-radius:8px;
+    margin-top:10px;
+  }
 </style>
 </head>
-
 <body>
 
-<div id="container">
-    <div id="questionBox">
-        <h2>Benimle kahve içmek ister misin? ☕💖</h2>
-        <button class="yes" onclick="yesCoffee()">Evet</button>
-        <button class="no" onclick="noCoffee()">Hayır</button>
-    </div>
+<div id="startScreen">
+  <h1 style="color:#c7426b">Bir Prenses Tehlikede 👑</h1>
+  <p style="max-width:420px;color:#6b4050">
+    Karanlık yaratıklar prensesi pembe diyara hapsetti.  
+    Kahramanımız onu kurtarmalı… Belki sonunda güzel bir teklif yapar 😉☕
+  </p>
+  <button id="startBtn">Görevi Başlat 🚀</button>
+</div>
 
-    <div id="dateBox" class="hidden">
-        <h2>Peki hangi gün ve saat güzel olur? ✨</h2>
-        <input type="date" id="dateInput">
-        <input type="time" id="timeInput">
-        <button class="yes" onclick="saveDate()">Devam</button>
-    </div>
+<h2 style="color:#c7426b;margin-top:20px;">Prensesi kurtar! 💖</h2>
+<p style="color:#6b4050;margin:-10px 0 10px;">Zıplamak için <b>Boşluk</b> veya dokun</p>
 
-    <div id="pickupBox" class="hidden">
-        <h2>Seni almamı ister misin? 🚗💗</h2>
-        <button class="yes" onclick="pickupYes()">Evet</button>
-        <button class="no" onclick="pickupNo()">Hayır</button>
-    </div>
+<canvas id="game" width="780" height="330"></canvas>
 
-    <div id="addressBox" class="hidden">
-        <h2>Nereden alayım? 📍</h2>
-        <textarea id="addressInput" rows="3" placeholder="Adres bilgisi..."></textarea>
-        <button class="yes" onclick="finishWithAddress()">Tamamdır</button>
-    </div>
+<!-- ✅ İlk final: prenses kurtarıldı -->
+<div id="messageBox">
+  <h2>Prenses kurtarıldı! 👑💗</h2>
+  <canvas id="finalCanvas" width="320" height="150" style="margin-bottom:10px;"></canvas>
+  <p>Benimle kahve içmek ister misin? ☕💞</p>
+  <button class="btn" id="qYes">Evet ❤️</button>
+  <button class="btn secondary" id="qNo">Hayır 😊</button>
+</div>
 
-    <div id="finalMessage" class="hidden success"></div>
+<!-- ✅ Soru 2: seni alayım mı? -->
+<div id="questionBox">
+  <p>Seni almamı ister misin? 🚗</p>
+  <button class="btn" id="pickupYes">Evet</button>
+  <button class="btn secondary" id="pickupNo">Hayır</button>
+</div>
+
+<!-- ✅ Soru 3: nereden alayım? -->
+<div id="pickupBox">
+  <p>Beni nereden almamı istersin?</p>
+  <input id="address" placeholder="Adresini yaz"/>
+  <button class="btn" id="pickupContinue">Devam</button>
+</div>
+
+<!-- ✅ Soru 4: hangi gün? -->
+<div id="dateBox">
+  <p>Hangi gün buluşalım?</p>
+  <input type="date" id="dateInput"/>
+  <button class="btn" id="dateContinue">Devam</button>
+</div>
+
+<!-- ✅ Soru 5: saat kaçta? -->
+<div id="timeBox">
+  <p>Hangi saatte?</p>
+  <input type="time" id="timeInput"/>
+  <button class="btn" id="timeContinue">Devam</button>
+</div>
+
+<!-- ✅ Final özet -->
+<div id="summaryBox">
+  <h2>Randevu Hazır! 💞</h2>
+  <p id="summaryText"></p>
 </div>
 
 <script>
-let noCount = 0;
-let selectedDate = "";
-let selectedTime = "";
+/* ================================
+   SPRITE PALETTE
+================================ */
+const color={R:'#d7263d',B:'#2b7abf',L:'#ffd166',S:'#ffd9b3',K:'#111',P:'#3b82c4',Y:'#ffd966',W:'#fff'};
+function drawSprite(ctx,p,x,y,s){for(let r=0;r<p.length;r++){for(let c=0;c<p[r].length;c++){if(p[r][c]!==' . '[0]){ctx.fillStyle=color[p[r][c]];ctx.fillRect(x+c*s,y+r*s,s,s);}}}}
 
-/* ❤️ Arka Planda Kalpler */
-function makeHeart() {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML = "❤️";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.animationDuration = (3 + Math.random() * 3) + "s";
-    document.body.appendChild(heart);
-    setTimeout(() => heart.remove(), 5000);
+/* Hero & Princess sprites */
+const heroP=[
+"................","......KKKK......",".....KRRRRK.....","....KRBBBBRK....","...KRBBBBBBK....",
+"...KRBBLBBRK....","...KRRLLRRRK....","....KRRRRRK.....","....KRBSSBRK....","...KKSSSSSKK....",
+"...KSSSSSSSK....","...KSS..SSSK....","....KSSSSSK.....","....KSSSSK......",".....KKKKK......","................"
+];
+const princessA=[
+"................",".......KKK......","......KYYYK.....",".....KYYYYK.....",".....KPYPPK.....",
+"....KPPPPPK.....","....KPPPPPK.....","....KPPPPPK.....","...KKPPPPKK.....","...KPPPPPPK.....",
+"...KPPPPPPK.....","....KPPPPK......","....KPPPK.......",".....KKK........","................","................"
+];
+const princessB=[
+"................",".......KKK......","......KYYYK.....",".....KYYYYK.....",".....KPYPPK.....",
+"....KPPPPPK.....","....KPPWPPK.....","....KPPPWPK.....","...KKPPPPKK.....","...KPPPPPPK.....",
+"...KPPPPPPK.....","....KPPPPK......","....KPPPK.......",".....KKK........","................","................"
+];
+
+/* ================================
+   GAME ENGINE — HERO FIXED, WORLD MOVES
+================================ */
+const c=document.getElementById("game");
+const ctx=c.getContext("2d");
+let hero={x:70,y:220,w:40,h:40,vy:0,jumping:false};
+let worldX=0;
+let worldSpeed=2.2;  // ⭐ hızlandırılmış
+let obstacles=[];
+let princessX=1800; // ⭐ oyun daha uzun
+let started=false,over=false,reached=false,frame=0;
+
+/* Jump */
+function jump(){ if(started&&!over&&!reached&&!hero.jumping){ hero.jumping=true; hero.vy=-18; }}
+
+/* Input */
+document.addEventListener("keydown",e=>{ if(e.code==="Space"){e.preventDefault();jump();}});
+c.addEventListener("pointerdown",jump);
+
+/* Spawn obstacles */
+function spawnObs(){
+  const h=26+Math.random()*10;
+  obstacles.push({x:worldX+780+40,y:280-h,w:30,h});
 }
-setInterval(makeHeart, 800);
+setInterval(()=>{if(started&&!reached)spawnObs();},1500);
 
-/* ✅ Bölüm geçişi */
-function show(id) {
-    document.querySelectorAll("#container > div").forEach(el => el.classList.add("hidden"));
-    document.getElementById(id).classList.remove("hidden");
-}
+/* Rect collision */
+function col(a,b){return !(a.x+a.w<b.x||a.x>b.x+b.w||a.y+a.h<b.y||a.y>b.y+b.h);}
 
-/* ✅ Kahve sorusu */
-function yesCoffee() {
-    show("dateBox");
-}
-
-function noCoffee() {
-    noCount++;
-    const msgs = [
-        "Emin misin? 🥺",
-        "Bence güzel olurdu… 🌸",
-        "Bir şans vermek ister misin? 😇",
-        "Son kez soruyorum... emin misin? 💗"
-    ];
-    document.querySelector("#questionBox h2").innerText =
-        msgs[Math.min(noCount - 1, msgs.length - 1)];
-}
-
-/* ✅ Tarih – saat */
-function saveDate() {
-    selectedDate = document.getElementById("dateInput").value;
-    selectedTime = document.getElementById("timeInput").value;
-
-    if (!selectedDate || !selectedTime)
-        return alert("Tarih ve saat seçmeyi unutma 😊");
-
-    show("pickupBox");
-}
-
-/* ✅ Adres istemeyen durum */
-function pickupNo() {
-    const d = formatDate(selectedDate);
-    const t = formatTime(selectedTime);
-    finish(`Tamamdır! ${d} saat ${t}'da görüşmek üzere 💞`);
-}
-
-/* ✅ Adres isteyen durum */
-function pickupYes() {
-    show("addressBox");
-}
-
-function finishWithAddress() {
-    const address = document.getElementById("addressInput").value.trim();
-    if (!address) return alert("Adres bilgisini yazmayı unutma 😊");
-
-    const d = formatDate(selectedDate);
-    const t = formatTime(selectedTime);
-
-    finish(`Tamamdır! ${d} saat ${t}'da görüşmek üzere 💞`);
+/* Background */
+function drawBG(){
+  ctx.fillStyle="#ffdce5";ctx.fillRect(0,0,780,100);
+  for(let i=0;i<6;i++){
+    let x=(( -worldX*0.4)+i*200)%1000-150;
+    ctx.fillStyle="#fff4fa";ctx.fillRect(x,40+(i%2)*10,130,24);
+  }
 }
 
-/* ✅ Final Mesajı */
-function finish(msg) {
-    show("finalMessage");
-    document.getElementById("finalMessage").innerHTML = msg;
+/* MAIN LOOP */
+function loop(){
+  ctx.clearRect(0,0,780,330);
+  drawBG();
+  ctx.fillStyle="#f4d6de";ctx.fillRect(0,280,780,50);
+
+  if(started&&!reached){ worldX+=worldSpeed; frame++; }
+
+  // Princess
+  const pF=(Math.floor(frame/20)%2===0?princessA:princessB);
+  drawSprite(ctx,pF,princessX-worldX,200,3);
+
+  // Obstacles
+  ctx.fillStyle="#b71c46";
+  obstacles.forEach(o=>{
+    const sx=o.x-worldX;
+    ctx.fillRect(sx,o.y,o.w,o.h);
+    if(col(hero,{x:sx,y:o.y,w:o.w,h:o.h})){ over=true; alert("Kahraman düştü 😅"); location.reload();}
+  });
+
+  // Hero
+  if(hero.jumping){ hero.vy+=0.6; hero.y+=hero.vy;
+    if(hero.y>=220){hero.y=220;hero.jumping=false;} }
+  drawSprite(ctx,heroP,hero.x,hero.y,2.6);
+
+  // Reached princess
+  if((princessX-worldX)<=hero.x+hero.w && !reached){ reached=true; setTimeout(showFinal,300); }
+
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* ================================
+   FINAL SCENE
+================================ */
+function showFinal(){
+  document.getElementById("messageBox").style.display="block";
+
+  const fc=document.getElementById("finalCanvas");
+  const fctx=fc.getContext("2d");
+  let cy=120,t=0;
+
+  function anim(){
+    fctx.clearRect(0,0,320,150);
+    drawSprite(fctx,heroP,40,50,3);
+    drawSprite(fctx,(t%40<20?princessA:princessB),200,50,3);
+
+    fctx.fillStyle="#6f3b3b";fctx.fillRect(140,cy,30,20);
+    fctx.fillStyle="#fff";fctx.fillRect(142,cy+4,26,12);
+    cy-=0.35;if(cy<80)cy=120;
+
+    t++;requestAnimationFrame(anim);
+  }
+  anim();
 }
 
-/* ✅ Tarihi okunabilir formata çevirme */
-function formatDate(dateString) {
-    const months = [
-        "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-        "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
-    ];
-    const d = new Date(dateString);
-    return `${d.getDate()} ${months[d.getMonth()]}`;
+/* ================================
+   QUESTION FLOW
+================================ */
+let wantCoffee="",wantPickup="",addr="",day="",time="";
+
+/* Q1 */
+qYes.addEventListener("click",()=>{ wantCoffee="Evet"; nextFlow(questionBox); });
+qNo.addEventListener("click",()=>{ wantCoffee="Hayır"; summary(); });
+
+/* Q2 */
+pickupYes.addEventListener("click",()=>{ wantPickup="Evet"; nextFlow(pickupBox);});
+pickupNo.addEventListener("click",()=>{ wantPickup="Hayır"; nextFlow(dateBox);});
+
+/* Q3 */
+pickupContinue.addEventListener("click",()=>{
+  addr=document.getElementById("address").value;
+  nextFlow(dateBox);
+});
+
+/* Q4 */
+dateContinue.addEventListener("click",()=>{
+  day=document.getElementById("dateInput").value;
+  nextFlow(timeBox);
+});
+
+/* Q5 */
+timeContinue.addEventListener("click",()=>{
+  time=document.getElementById("timeInput").value;
+  summary();
+});
+
+function nextFlow(show){
+  hideAll();
+  show.style.display="block";
 }
 
-/* ✅ Saat formatı */
-function formatTime(timeString) {
-    return timeString.slice(0,5);  
+function hideAll(){
+  messageBox.style.display="none";
+  questionBox.style.display="none";
+  pickupBox.style.display="none";
+  dateBox.style.display="none";
+  timeBox.style.display="none";
+  summaryBox.style.display="none";
 }
+
+function summary(){
+  hideAll();
+  summaryBox.style.display="block";
+
+  let txt="💗 Randevu Oluşturuldu!<br><br>";
+  txt+=`Kahve: <b>${wantCoffee}</b><br>`;
+  if(wantPickup) txt+=`Seni alayım mı?: <b>${wantPickup}</b><br>`;
+  if(addr) txt+=`Adres: <b>${addr}</b><br>`;
+  if(day) txt+=`Tarih: <b>${day}</b><br>`;
+  if(time) txt+=`Saat: <b>${time}</b><br>`;
+  summaryText.innerHTML=txt;
+}
+
+/* Start */
+startBtn.onclick=()=>{document.getElementById("startScreen").style.display="none";started=true;};
 </script>
-
 </body>
 </html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kahve Daveti</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #ffe6ec, #fff8f2);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #container {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 35px;
+        width: 90%;
+        max-width: 450px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 30px rgba(255, 150, 170, 0.3);
+        text-align: center;
+        animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+        from {opacity: 0; transform: scale(0.95);}
+        to {opacity: 1; transform: scale(1);}
+    }
+
+    h2 {
+        color: #b04d6d;
+        margin-bottom: 25px;
+        font-size: 24px;
+        line-height: 1.4;
+    }
+
+    button {
+        padding: 14px 22px;
+        margin: 10px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 17px;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+
+    .yes {
+        background: #ff7ea8;
+        color: white;
+        box-shadow: 0px 4px 12px rgba(255, 120, 160, 0.4);
+    }
+
+    .yes:hover { background: #ff5c92; }
+
+    .no {
+        background: #ffd1d1;
+        color: #b84c4c;
+    }
+
+    .no:hover { background: #ffb3b3; }
+
+    input, textarea {
+        width: 100%;
+        padding: 14px;
+        border-radius: 12px;
+        border: 1px solid #ffb5c8;
+        margin-bottom: 15px;
+        font-size: 15px;
+        background: #fff8fa;
+    }
+
+    .hidden { display: none; }
+
+    .success {
+        font-size: 20px;
+        color: #c7426b;
+        font-weight: bold;
+        padding: 15px;
+    }
+
+    /* ❤️ Kalp Animasyonları */
+    .heart {
+        position: fixed;
+        bottom: -10px;
+        color: #ff7ea8;
+        font-size: 20px;
+        animation: floatUp 4s linear infinite;
+        opacity: 0.8;
+    }
+
+    @keyframes floatUp {
+        0% {transform: translateY(0) translateX(0);}
+        100% {transform: translateY(-110vh) translateX(20px);}
+    }
+</style>
+</head>
+
+<body>
+
+<div id="container">
+    <div id="questionBox">
+        <h2>Benimle kahve içmek ister misin? ☕💖</h2>
+        <button class="yes" onclick="yesCoffee()">Evet</button>
+        <button class="no" onclick="noCoffee()">Hayır</button>
+    </div>
+
+    <div id="dateBox" class="hidden">
+        <h2>Peki hangi gün ve saat güzel olur? ✨</h2>
+        <input type="date" id="dateInput">
+        <input type="time" id="timeInput">
+        <button class="yes" onclick="saveDate()">Devam</button>
+    </div>
+
+    <div id="pickupBox" class="hidden">
+        <h2>Seni almamı ister misin? 🚗💗</h2>
+        <button class="yes" onclick="pickupYes()">Evet</button>
+        <button class="no" onclick="pickupNo()">Hayır</button>
+    </div>
+
+    <div id="addressBox" class="hidden">
+        <h2>Nereden alayım? 📍</h2>
+        <textarea id="addressInput" rows="3" placeholder="Adres bilgisi..."></textarea>
+        <button class="yes" onclick="finishWithAddress()">Tamamdır</button>
+    </div>
+
+    <div id="finalMessage" class="hidden success"></div>
+</div>
+
+<script>
+let noCount = 0;
+let selectedDate = "";
+let selectedTime = "";
+
+/* ❤️ Arka Planda Kalpler */
+function makeHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML = "❤️";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = (3 + Math.random() * 3) + "s";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+}
+setInterval(makeHeart, 800);
+
+/* ✅ Bölüm geçişi */
+function show(id) {
+    document.querySelectorAll("#container > div").forEach(el => el.classList.add("hidden"));
+    document.getElementById(id).classList.remove("hidden");
+}
+
+/* ✅ Kahve sorusu */
+function yesCoffee() {
+    show("dateBox");
+}
+
+function noCoffee() {
+    noCount++;
+    const msgs = [
+        "Emin misin? 🥺",
+        "Bence güzel olurdu… 🌸",
+        "Bir şans vermek ister misin? 😇",
+        "Son kez soruyorum... emin misin? 💗"
+    ];
+    document.querySelector("#questionBox h2").innerText =
+        msgs[Math.min(noCount - 1, msgs.length - 1)];
+}
+
+/* ✅ Tarih – saat */
+function saveDate() {
+    selectedDate = document.getElementById("dateInput").value;
+    selectedTime = document.getElementById("timeInput").value;
+
+    if (!selectedDate || !selectedTime)
+        return alert("Tarih ve saat seçmeyi unutma 😊");
+
+    show("pickupBox");
+}
+
+/* ✅ Adres istemeyen durum */
+function pickupNo() {
+    const d = formatDate(selectedDate);
+    const t = formatTime(selectedTime);
+    finish(`Tamamdır! ${d} saat ${t}'da görüşmek üzere 💞`);
+}
+
+/* ✅ Adres isteyen durum */
+function pickupYes() {
+    show("addressBox");
+}
+
+function finishWithAddress() {
+    const address = document.getElementById("addressInput").value.trim();
+    if (!address) return alert("Adres bilgisini yazmayı unutma 😊");
+
+    const d = formatDate(selectedDate);
+    const t = formatTime(selectedTime);
+
+    finish(`Tamamdır! ${d} saat ${t}'da görüşmek üzere 💞`);
+}
+
+/* ✅ Final Mesajı */
+function finish(msg) {
+    show("finalMessage");
+    document.getElementById("finalMessage").innerHTML = msg;
+}
+
+/* ✅ Tarihi okunabilir formata çevirme */
+function formatDate(dateString) {
+    const months = [
+        "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+        "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+    ];
+    const d = new Date(dateString);
+    return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+/* ✅ Saat formatı */
+function formatTime(timeString) {
+    return timeString.slice(0,5);  
+}
+</script>
+
+</body>
+</html>
